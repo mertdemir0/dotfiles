@@ -1,0 +1,5 @@
+fish/secrets.fish
+*.bak
+*.swp
+*~
+.DS_Store
