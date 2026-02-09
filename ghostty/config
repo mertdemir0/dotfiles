@@ -3,7 +3,7 @@
 # ================================================
 
 # Shell
-command = fish
+command = /opt/homebrew/bin/fish
 
 # Terminal
 term = xterm-256color
