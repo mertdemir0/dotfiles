@@ -70,7 +70,7 @@ quit-after-last-window-closed = false
 # ================================================
 
 # --- Splits ---
-keybind = ctrl+space>bar=new_split:right
+keybind = ctrl+space>backslash=new_split:right
 keybind = ctrl+space>minus=new_split:down
 
 # --- Navigate splits (vim-style) ---
