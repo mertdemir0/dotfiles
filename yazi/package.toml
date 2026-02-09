@@ -1,0 +1,32 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:full-border"
+rev = "6c11a97"
+hash = "e9bde0d971f6be1851c8e9e98d4e5f12"
+
+[[plugin.deps]]
+use = "Reledia/glow"
+rev = "4e016fa"
+hash = "c505e670f2a378a84931f553d9b2e398"
+
+[[plugin.deps]]
+use = "Tyarel8/video-ffmpeg"
+rev = "fe26a18"
+hash = "17de69d802bf82a04719a7f18d0e65f3"
+
+[[plugin.deps]]
+use = "Reledia/miller"
+rev = "40e0265"
+hash = "2d6d77583162aaf0a599e7a3091b5878"
+
+[[plugin.deps]]
+use = "AnirudhG07/rich-preview"
+rev = "9bcf154"
+hash = "d2a6fa78e3ba43cfb44a45e52c0ebad6"
+
+[[plugin.deps]]
+use = "AnirudhG07/nbpreview"
+rev = "52a14b3"
+hash = "ec558646fb09a3f73cd00c2b76451a1c"
+
+[flavor]
+deps = []
