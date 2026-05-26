@@ -7,7 +7,7 @@
 # so this script is safe to re-run after every system update.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/mertdemir0/dotfiles/main/scripts/steamdeck-wifi-fix.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/mertdemir0/dotfiles/master/scripts/steamdeck-wifi-fix.sh | bash
 # or:
 #   chmod +x steamdeck-wifi-fix.sh && ./steamdeck-wifi-fix.sh
 
