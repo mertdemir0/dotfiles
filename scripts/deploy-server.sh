@@ -34,7 +34,9 @@ warn() { printf "\033[1;33m[!]\033[0m %s\n" "$*"; }
 err()  { printf "\033[1;31m[✗]\033[0m %s\n" "$*" >&2; }
 
 usage() {
-    sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'
+    # Print the leading comment block (everything after the shebang up to the
+    # first non-comment line), stripping the "# " prefix.
+    awk 'NR==1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"
     exit "${1:-0}"
 }
 
