@@ -18,8 +18,9 @@ WezTerm configs, wired together with a single symlink installer.
 
 ## Local install
 
-Clone, then run the installer. Existing non-symlink configs are backed up to
-`*.bak` before being replaced.
+Clone, then run the installer. It installs fish (via your package manager or
+Homebrew), sets it as your login shell, and symlinks every config. Existing
+non-symlink configs are backed up to `*.bak` before being replaced.
 
 ```bash
 git clone https://github.com/mertdemir0/dotfiles.git ~/dotfiles
@@ -41,14 +42,16 @@ CLI tools the configs expect (fish, tmux, starship, eza/bat/fd/ripgrep, …),
 clones this repo to `~/dotfiles`, and runs `install.sh`. It's idempotent, so
 re-running just pulls the latest dotfiles and re-links.
 
+It also makes fish the remote user's login shell by default.
+
 ```bash
-./scripts/deploy-server.sh user@host           # bootstrap + link configs
-./scripts/deploy-server.sh user@host --shell   # also make fish the login shell
+./scripts/deploy-server.sh user@host              # bootstrap, link, set fish default
+./scripts/deploy-server.sh user@host --no-shell   # keep the current login shell
 ```
 
 | Flag | Effect |
 |------|--------|
-| `--shell` | `chsh` the remote user to fish (adds it to `/etc/shells` if needed) |
+| `--no-shell` | Don't change the login shell (default is to `chsh` to fish) |
 | `--branch <name>` | Deploy a specific branch (default `master`) |
 | `--repo <url>` | Override the repo URL |
 

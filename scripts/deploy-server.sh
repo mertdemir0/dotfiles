@@ -7,9 +7,11 @@
 # symlink every config. Everything is idempotent, so it is safe to re-run
 # after a server is rebuilt or to pull in new dotfiles.
 #
+# By default it also makes fish the remote user's login shell.
+#
 # Usage:
 #   ./scripts/deploy-server.sh user@host
-#   ./scripts/deploy-server.sh user@host --shell           # also chsh to fish
+#   ./scripts/deploy-server.sh user@host --no-shell        # keep current login shell
 #   ./scripts/deploy-server.sh user@host --branch dev      # deploy a branch
 #   ./scripts/deploy-server.sh user@host --repo URL        # override repo URL
 #
@@ -22,7 +24,7 @@ set -euo pipefail
 # ─── Defaults ───────────────────────────────────────────────────────────────
 REPO_URL="https://github.com/mertdemir0/dotfiles.git"
 BRANCH="master"
-DO_SHELL=0
+DO_SHELL=1
 TARGET=""
 
 # ─── Pretty logging (local) ─────────────────────────────────────────────────
@@ -40,7 +42,8 @@ usage() {
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)   usage 0 ;;
-        --shell)     DO_SHELL=1; shift ;;
+        --shell)     DO_SHELL=1; shift ;;   # back-compat: now the default
+        --no-shell)  DO_SHELL=0; shift ;;
         --branch)    BRANCH="${2:?--branch needs a value}"; shift 2 ;;
         --repo)      REPO_URL="${2:?--repo needs a value}"; shift 2 ;;
         -*)          err "Unknown option: $1"; usage 1 ;;
@@ -212,29 +215,11 @@ else
 fi
 ok "dotfiles ready at $REPO_DIR"
 
-# ─── Link configs ──────────────────────────────────────────────────────────
+# ─── Link configs (install.sh handles fish install + default shell) ────────
+# DOTFILES_SET_SHELL drives whether install.sh chsh's to fish, honoring
+# --no-shell without duplicating the logic here.
 log "Running install.sh..."
-bash "$REPO_DIR/install.sh"
-
-# ─── Optionally set fish as the login shell ─────────────────────────────────
-if [[ "$DO_SHELL" -eq 1 ]]; then
-    FISH_BIN="$(command -v fish || true)"
-    if [[ -n "$FISH_BIN" ]]; then
-        if [[ "${SHELL:-}" != "$FISH_BIN" ]]; then
-            grep -qxF "$FISH_BIN" /etc/shells 2>/dev/null || \
-                echo "$FISH_BIN" | $SUDO tee -a /etc/shells >/dev/null 2>&1 || true
-            if chsh -s "$FISH_BIN" >/dev/null 2>&1; then
-                ok "default shell set to fish (re-login to apply)"
-            else
-                warn "could not chsh to fish — run: chsh -s $FISH_BIN"
-            fi
-        else
-            ok "fish is already the default shell"
-        fi
-    else
-        warn "fish not installed — cannot set as default shell"
-    fi
-fi
+DOTFILES_SET_SHELL="$DO_SHELL" bash "$REPO_DIR/install.sh"
 
 ok "Bootstrap complete on $(hostname)."
 REMOTE
@@ -243,5 +228,6 @@ ok "Deployment to ${TARGET} finished."
 echo
 log "Next steps:"
 echo "    • SSH in and start fish:  ssh ${TARGET} -t fish"
-[[ "$DO_SHELL" -eq 0 ]] && echo "    • Make fish the default:  re-run with --shell"
+[[ "$DO_SHELL" -eq 1 ]] && echo "    • fish is now the login shell (re-login to apply)"
+[[ "$DO_SHELL" -eq 0 ]] && echo "    • Login shell unchanged (--no-shell); set later: chsh -s \$(command -v fish)"
 echo "    • Add secrets:            copy fish/secrets.fish.example → ~/.config/fish/secrets.fish"
