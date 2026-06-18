@@ -62,10 +62,13 @@ if test (uname) = "Linux"
         set -gx INFOPATH /usr/local/texlive/2025/texmf-dist/doc/info $INFOPATH
     end
 
-    # SSH agent (GNOME keyring)
-    if test -z "$SSH_AUTH_SOCK"
-        eval (gnome-keyring-daemon --start --components=secrets,ssh 2>/dev/null)
-        set -x SSH_AUTH_SOCK $SSH_AUTH_SOCK
+    # SSH agent (GNOME keyring). gnome-keyring-daemon prints bash-style
+    # KEY=value lines, so parse them rather than `eval` (which fish can't).
+    if test -z "$SSH_AUTH_SOCK"; and command -q gnome-keyring-daemon
+        for line in (gnome-keyring-daemon --start --components=secrets,ssh 2>/dev/null)
+            set -l kv (string split -m 1 '=' $line)
+            test (count $kv) -eq 2; and set -gx $kv[1] $kv[2]
+        end
     end
 end
 
@@ -94,7 +97,6 @@ alias la="eza -a --icons --group-directories-first"
 alias cat="bat --style=auto"
 alias find="fd"
 alias grep="rg"
-alias cd="z"
 
 # ================================
 # Quick navigation
@@ -167,9 +169,10 @@ if command -q starship
     starship init fish | source
 end
 
-# Zoxide
+# Zoxide — replaces `cd` with frecency-aware jumping. Use --cmd cd (not
+# `alias cd=z`, which recurses infinitely into zoxide's own cd call).
 if command -q zoxide
-    zoxide init fish | source
+    zoxide init fish --cmd cd | source
 end
 
 # Atuin (smart history)
@@ -177,11 +180,12 @@ if command -q atuin
     atuin init fish --disable-up-arrow | source
 end
 
-# fzf key bindings
+# fzf key bindings (--fish needs fzf ≥ 0.48; redirect so older fzf, which
+# doesn't know --fish, fails silently instead of printing an error)
 if test -f ~/.fzf/shell/key-bindings.fish
     source ~/.fzf/shell/key-bindings.fish
 else if command -q fzf
-    fzf --fish | source 2>/dev/null
+    fzf --fish 2>/dev/null | source
 end
 
 # FZF config
