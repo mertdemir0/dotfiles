@@ -1,0 +1,44 @@
+# SSH host aliases referenced by the fish aliases (oc*, hm*, pi) and the
+# WezTerm o/m workspaces. Copy the blocks you need into ~/.ssh/config and fill
+# in your real HostName/User/key. Keep real hosts/IPs/keys OUT of this repo.
+#
+#   cp ssh/config.example ~/.ssh/config   # then edit
+#   chmod 600 ~/.ssh/config
+
+# Hetzner box — fish: oc / oc1..oc4 ; wezterm: leader+o
+Host hetzner
+    HostName your.hetzner.host.or.tailscale.ip
+    User your-user
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# pop-os home machine — fish: hm / hm1..hm4 ; wezterm: leader+m
+# (the hm*/leader+m shortcuts expect this Host; add it or rely on LAN/mDNS)
+Host pop-os
+    HostName your.pop-os.host.or.ip
+    User your-user
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# Raspberry Pi — fish: pi
+Host raspi
+    HostName 192.168.x.x
+    User your-user
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# --- Other handy hosts (not referenced by the dotfiles, kept as examples) ---
+
+# Vast.ai GPU box (custom port)
+Host vast
+    HostName your.vast.host
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+
+# AWS EC2
+Host aws
+    HostName your.ec2.host
+    User ubuntu
+    IdentityFile ~/.ssh/your-ec2-key.pem
+    IdentitiesOnly yes
