@@ -13,6 +13,7 @@ WezTerm configs, wired together with a single symlink installer.
 | `yazi/` | Yazi file manager (config, theme, keymap, plugins) |
 | `ghostty/` | Ghostty terminal config |
 | `wezterm/` | WezTerm terminal config |
+| `ssh/` | `config.example` — host alias template for the `oc*`/`hm*`/`pi` shortcuts (copy to `~/.ssh/config`) |
 | `install.sh` | Symlinks every config into `~/.config` (and `~`) |
 | `scripts/` | Standalone helper scripts (see below) |
 

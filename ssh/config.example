@@ -1,0 +1,24 @@
+# SSH host aliases used by the fish aliases (oc*, hm*, pi) and the WezTerm
+# o/m workspaces. Copy the relevant blocks into ~/.ssh/config and fill in
+# your real values. Keep real hosts/IPs/keys OUT of this repo.
+#
+#   cp ssh/config.example ~/.ssh/config   # then edit
+#   chmod 600 ~/.ssh/config
+
+# Hetzner box — fish: oc / oc1..oc4 ; wezterm: leader+o
+Host hetzner
+    HostName your.hetzner.ip.here
+    User your-user
+    IdentityFile ~/.ssh/id_ed25519
+
+# pop-os home machine — fish: hm / hm1..hm4 ; wezterm: leader+m
+Host pop-os
+    HostName your.pop-os.host.or.ip
+    User your-user
+    IdentityFile ~/.ssh/id_ed25519
+
+# Raspberry Pi — fish: pi
+Host raspi
+    HostName your.raspi.host.or.ip
+    User pi
+    IdentityFile ~/.ssh/id_ed25519

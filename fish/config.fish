@@ -88,6 +88,13 @@ if test -f ~/.config/fish/secrets.fish
 end
 
 # ================================
+# Interactive-only below this point. Non-interactive shells (VS Code's
+# startup probe, `ssh host <cmd>`, scripts) keep the PATH/env set above but
+# skip aliases, prompt and tool init.
+# ================================
+status is-interactive; or exit
+
+# ================================
 # Modern CLI replacements
 # ================================
 alias ls="eza --icons --group-directories-first"
@@ -121,6 +128,7 @@ alias lg="lazygit"
 # Docker
 # ================================
 alias dc="docker compose"
+alias dck="docker stop (docker ps -q)"   # stop all running containers
 
 # ================================
 # Python / ML
@@ -145,13 +153,32 @@ if test (uname) = "Linux"
     alias h2o-cluster="cd ~/Apps/h2o && java -jar h2o.jar -name cluster"
     alias h2o-memory="cd ~/Apps/h2o && java -Xmx32g -jar h2o.jar"
 
-    alias tokui="/home/mert/tokui/bin/tokui"
+    alias tokui="~/tokui/bin/tokui"
 end
 
 # ================================
 # Other tools
 # ================================
 alias y="yazi"
+
+# ================================
+# Remote servers — hosts are SSH config aliases (IP/user/key live in
+# ~/.ssh/config, never in this repo). See ssh/config.example.
+# ================================
+# Hetzner box: main + 4 named tmux sessions
+alias oc="ssh hetzner -t 'tmux new-session -A -s main'"
+alias oc1="ssh hetzner -t 'tmux new-session -A -s s1'"
+alias oc2="ssh hetzner -t 'tmux new-session -A -s s2'"
+alias oc3="ssh hetzner -t 'tmux new-session -A -s s3'"
+alias oc4="ssh hetzner -t 'tmux new-session -A -s s4'"
+# pop-os home machine: main + 4 named tmux sessions
+alias hm="ssh pop-os -t 'tmux new-session -A -s main'"
+alias hm1="ssh pop-os -t 'tmux new-session -A -s s1'"
+alias hm2="ssh pop-os -t 'tmux new-session -A -s s2'"
+alias hm3="ssh pop-os -t 'tmux new-session -A -s s3'"
+alias hm4="ssh pop-os -t 'tmux new-session -A -s s4'"
+# Raspberry Pi
+alias pi="ssh raspi"
 
 # ================================
 # Quick SSH with tmux
@@ -178,6 +205,11 @@ end
 # Atuin (smart history)
 if command -q atuin
     atuin init fish --disable-up-arrow | source
+end
+
+# pyenv (Python version manager)
+if command -q pyenv
+    pyenv init - | source
 end
 
 # fzf key bindings (--fish needs fzf ≥ 0.48; redirect so older fzf, which
