@@ -30,17 +30,21 @@ config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.window_close_confirmation = "NeverPrompt"
 config.initial_cols = 140
 config.initial_rows = 40
+config.inactive_pane_hsb = {
+	saturation =  0.6,
+	brightness = 0.2
+}
 
 -- Tab bar
 config.hide_tab_bar_if_only_one_tab = false
 config.tab_bar_at_bottom = false
 config.use_fancy_tab_bar = true
-config.tab_max_width = 32
+config.tab_max_width = 256
 
 -- Tab bar styling (matches Tokyo Night)
 config.window_frame = {
     font = wezterm.font({ family = "JetBrainsMono Nerd Font", weight = "Bold" }),
-    font_size = 10.0,
+    font_size = 13.0,
     active_titlebar_bg = "#1a1b26",
     inactive_titlebar_bg = "#1a1b26",
 }
@@ -85,6 +89,23 @@ config.front_end = "WebGpu"
 config.webgpu_power_preference = "HighPerformance"
 config.max_fps = 144
 config.animation_fps = 60
+
+-- ===================
+-- SSH Workspace Helper
+-- ===================
+
+local function ssh_workspace(window, pane, ssh_cmd)
+    local bottom_left = pane:split({ direction = "Bottom", size = 0.5 })
+    local top_right = pane:split({ direction = "Right", size = 0.5 })
+    local bottom_right = bottom_left:split({ direction = "Right", size = 0.5 })
+
+    wezterm.sleep_ms(300)
+
+    pane:send_text(ssh_cmd("s1") .. "\n")
+    top_right:send_text(ssh_cmd("s2") .. "\n")
+    bottom_left:send_text(ssh_cmd("s3") .. "\n")
+    bottom_right:send_text(ssh_cmd("s4") .. "\n")
+end
 
 -- ===================
 -- Shell
@@ -155,11 +176,33 @@ config.keys = {
         mods = "LEADER",
         action = wezterm.action_callback(function(window, pane)
             -- Split current pane, new pane goes to bottom
-            pane:split({ direction = "Bottom", size = 0.5 })
+            pane:split({ direction = "Bottom", size = 0.35 })
             -- Split current (top) pane, new pane goes to right
             pane:split({ direction = "Right", size = 0.5 })
         end),
     },
+
+    -- OC workspace: DS layout + SSH to Hetzner, 3 separate tmux sessions
+        {
+            key = "o",
+            mods = "LEADER",
+            action = wezterm.action_callback(function(window, pane)
+                ssh_workspace(window, pane, function(session)
+                    return "ssh hetzner -t 'tmux new-session -A -s " .. session .. "'"
+                end)
+            end),
+        },
+
+        -- HM workspace: DS layout + SSH to pop-os, 3 separate tmux sessions
+        {
+            key = "m",
+            mods = "LEADER",
+            action = wezterm.action_callback(function(window, pane)
+                ssh_workspace(window, pane, function(session)
+                    return "ssh pop-os -t 'tmux new-session -A -s " .. session .. "'"
+                end)
+            end),
+        },
 
     -- Copy mode
     { key = "[", mods = "LEADER", action = act.ActivateCopyMode },
@@ -205,7 +248,7 @@ config.mouse_bindings = {
 -- ===================
 
 wezterm.on("update-status", function(window, pane)
-    local date = wezterm.strftime("%H:%M  %a %b %d")
+    local date = wezterm.strftime("%H:%M  %d %a %b")
     local hostname = wezterm.hostname()
 
     window:set_right_status(wezterm.format({
